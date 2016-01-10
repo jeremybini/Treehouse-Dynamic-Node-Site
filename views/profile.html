@@ -1,11 +1,35 @@
 <div id="profile">
   <img src="{{avatarUrl}}" alt="Avatar" id="avatar">
 
-  <p><span>@{{username}}</span></p>
+  <p><span>@{{fullName}}</span></p>
 
   <ul>
       <li><span>{{badges}}</span> Badges earned</li>
-      <li><span>{{javascriptPoints}}</span> JavaScript points</li>
+      <li><span>{{points}}</span> {{subject}} points</li>
+		  </form>
       <li><a href="/">search again</a></li>
   </ul>
+
+  <p>Check other subjects</p>
+	  <form action="/" method="POST">
+	  	<input type="hidden" placeholder="Enter a Treehouse username" id="username" name="username" value="{{username}}">
+		  <select name="subject">
+	      <option value="total">Total</option>
+	      <option value="HTML">HTML</option>
+	      <option value="CSS">CSS</option>
+	      <option value="Design">Design</option>
+	      <option value="JavaScript">JavaScript</option>
+	      <option value="Ruby">Ruby</option>
+	      <option value="PHP">PHP</option>
+	      <option value="WordPress">WordPress</option>
+	      <option value="iOS">iOS</option>
+	      <option value="Android">Android</option>
+	      <option value="Development Tools">Development Tools</option>
+	      <option value="Business">Business</option>
+	      <option value="Python">Python</option>
+	      <option value="Java">Java</option>
+		  	<option value="Digital Literacy">Digital Literacy</option>
+		  </select>
+		  <input type="submit" value="submit" class="button">
+		</form>
 </div>

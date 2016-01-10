@@ -25,8 +25,13 @@ function home(request, response) {
 				//extract username to json object
 				var query = querystring.parse(postBody.toString());
 
+				var locationUrl = { 'Location': '/' };
+
+				if (query.username.length>0) {
+					locationUrl['Location'] = '/'+query.username+'?'+query.subject
+				}
 				// redirect to /:username
-				response.writeHead(303, { 'Location': '/'+query.username });
+				response.writeHead(303, locationUrl);
 				response.end();
 			})
 		}
@@ -35,40 +40,47 @@ function home(request, response) {
 
 //Handle HTTP route GET /:username ie /jeremybini
 function user(request, response) {
-	//if url == "/.."
-	var username = request.url.replace('/', "");
-	if (username.length > 0) {
-		response.writeHead(200, commonHeader);
-		renderer.view("header", {}, response);
-		
-		//get json from Treehouse
-		var studentProfile = new Profile(username);
+	console.log(request.url);
+	//check if the requested url is of proper format
+	if (request.url.match(/\/(\w+)\?(\w+)/)) {
+		var urlParams = request.url.match(/\/(\w+)\?(\w+)/);
 
-		//on 'end'
-		studentProfile.on('end', function (profileJSON) {
-			//store values which we need
-			var values = {
-				avatarUrl: profileJSON.gravatar_url,
-				username: profileJSON.name,
-				badges: profileJSON.badges.length,
-				javascriptPoints: profileJSON.points.JavaScript
-			}
-			//simple response
-			renderer.view("profile", values, response);
-			renderer.view("footer", {}, response);
-			response.end();
-		})
-				
-		//on 'error'
-		studentProfile.on('error', function (error) {
-			//show error
-			renderer.view("error", { errorMessage: error.message }, response);
-			renderer.view("search", {}, response);
-			renderer.view("footer", {}, response);
-			response.end();
-		})
-				
-		
+		var username = urlParams[1];
+		var subject = urlParams[2];
+
+		if (username.length > 0) {
+			response.writeHead(200, commonHeader);
+			renderer.view("header", {}, response);
+			
+			//get json from Treehouse
+			var studentProfile = new Profile(username);
+
+			//on 'end'
+			studentProfile.on('end', function (profileJSON) {
+				//store values which we need
+				var values = {
+					avatarUrl: profileJSON.gravatar_url,
+					fullName: profileJSON.name,
+					username: username,
+					badges: profileJSON.badges.length,
+					points: profileJSON.points[subject],
+					subject: subject
+				}
+				//simple response
+				renderer.view("profile", values, response);
+				renderer.view("footer", {}, response);
+				response.end();
+			})
+					
+			//on 'error'
+			studentProfile.on('error', function (error) {
+				//show error
+				renderer.view("error", { errorMessage: error.message }, response);
+				renderer.view("search", {}, response);
+				renderer.view("footer", {}, response);
+				response.end();
+			})			
+		}
 	}
 }
 
